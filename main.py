@@ -8,13 +8,6 @@ import os
 import http.client, urllib
 import json
 from zhdate import ZhDate
-global false, null, true
-false = null = true = ''
-def get_color():
-    # 获取随机颜色
-    get_colors = lambda n: list(map(lambda i: "#" + "%06x" % random.randint(0, 0xFFFFFF), range(n)))
-    color_list = get_colors(100)
-    return random.choice(color_list)
 
 
 def get_access_token():
@@ -22,16 +15,18 @@ def get_access_token():
     app_id = config["app_id"]
     # appSecret
     app_secret = config["app_secret"]
-    post_url = ("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={}&secret={}"
-                .format(app_id, app_secret))
+    post_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={}&secret={}".format(
+        app_id, app_secret
+    )
     try:
-        access_token = get(post_url).json()['access_token']
+        access_token = get(post_url).json()["access_token"]
     except KeyError:
         print("获取access_token失败，请检查app_id和app_secret是否正确")
         os.system("pause")
         sys.exit(1)
     # print(access_token)
     return access_token
+
 
 def get_birthday(birthday, year, today):
     birthday_year = birthday.split("-")[0]
@@ -42,7 +37,6 @@ def get_birthday(birthday, year, today):
         # 今年生日
         birthday = ZhDate(year, r_mouth, r_day).to_datetime().date()
         year_date = birthday
-
 
     else:
         # 获取国历生日的今年对应月和日
@@ -67,7 +61,6 @@ def get_birthday(birthday, year, today):
     return birth_day
 
 
-
 def get_weather(province, city):
     # 城市id
     try:
@@ -78,11 +71,11 @@ def get_weather(province, city):
         sys.exit(1)
     # city_id = 101280101
     # 毫秒级时间戳
-    t = (int(round(time() * 1000)))
+    t = int(round(time() * 1000))
     headers = {
         "Referer": "http://www.weather.com.cn/weather1d/{}.shtml".format(city_id),
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                      'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36",
     }
     url = "http://d1.weather.com.cn/dingzhi/{}.html?_={}".format(city_id, t)
     response = get(url, headers=headers)
@@ -100,111 +93,39 @@ def get_weather(province, city):
     return weather, temp, tempn
 
 
-
-#词霸每日一句
-def get_ciba():
-    if (Whether_Eng!=False):
-        try:
-            url = "http://open.iciba.com/dsapi/"
-            headers = {
-                'Content-Type': 'application/json',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                            'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
-            }
-            r = get(url, headers=headers)
-            note_en = r.json()["content"]
-            note_ch = r.json()["note"]
-            return (note_en,note_ch)
-        except:
-            return ("词霸API调取错误")
-
-
-#彩虹屁
-def caihongpi():
-    if (Whether_caihongpi!=False):
-        try:
-            conn = http.client.HTTPSConnection('api.tianapi.com')  #接口域名
-            params = urllib.parse.urlencode({'key':tianxing_API})
-            headers = {'Content-type':'application/x-www-form-urlencoded'}
-            conn.request('POST','/caihongpi/index',params,headers)
-            res = conn.getresponse()
-            data = res.read()
-            data = json.loads(data)
-            data = data["newslist"][0]["content"]
-            if("XXX" in data):
-                data.replace("XXX","蒋蒋")
-            return data
-        except:
-            return ("彩虹屁API调取错误，请检查API是否正确申请或是否填写正确")
-
-#健康小提示API
-def health():
-    if (Whether_health!=False):
-        try:
-            conn = http.client.HTTPSConnection('api.tianapi.com')  #接口域名
-            params = urllib.parse.urlencode({'key':tianxing_API})
-            headers = {'Content-type':'application/x-www-form-urlencoded'}
-            conn.request('POST','/healthtip/index',params,headers)
-            res = conn.getresponse()
-            data = res.read()
-            data = json.loads(data)
-            data = data["newslist"][0]["content"]
-            return data
-        except:
-             return ("健康小提示API调取错误，请检查API是否正确申请或是否填写正确")
-
-#星座运势
-def lucky():
-    if ( Whether_lucky!=False):
-        try:
-            conn = http.client.HTTPSConnection('api.tianapi.com')  #接口域名
-            params = urllib.parse.urlencode({'key':tianxing_API,'astro':astro})
-            headers = {'Content-type':'application/x-www-form-urlencoded'}
-            conn.request('POST','/star/index',params,headers)
-            res = conn.getresponse()
-            data = res.read()
-            data = json.loads(data)
-            data = "爱情指数："+str(data["newslist"][1]["content"])+"   工作指数："+str(data["newslist"][2]["content"])+"\n今日概述："+str(data["newslist"][8]["content"])
-            return data
-        except:
-            return ("星座运势API调取错误，请检查API是否正确申请或是否填写正确")
-
-#励志名言
-def lizhi():
-    if (Whether_lizhi!=False):
-        try:
-            conn = http.client.HTTPSConnection('api.tianapi.com')  #接口域名
-            params = urllib.parse.urlencode({'key':tianxing_API})
-            headers = {'Content-type':'application/x-www-form-urlencoded'}
-            conn.request('POST','/lzmy/index',params,headers)
-            res = conn.getresponse()
-            data = res.read()
-            data = json.loads(data)
-            return data["newslist"][0]["saying"]
-        except:
-            return ("励志古言API调取错误，请检查API是否正确申请或是否填写正确")
-        
-
-#下雨概率和建议
 def tip():
-    if (Whether_tip!=False):
-        try:
-            conn = http.client.HTTPSConnection('api.tianapi.com')  #接口域名
-            params = urllib.parse.urlencode({'key':tianxing_API,'city':city})
-            headers = {'Content-type':'application/x-www-form-urlencoded'}
-            conn.request('POST','/tianqi/index',params,headers)
-            res = conn.getresponse()
-            data = res.read()
-            data = json.loads(data)
-            pop = data["newslist"][0]["pop"]
-            tips = data["newslist"][0]["tips"]
-            return pop,tips
-        except:
-            return ("天气预报API调取错误，请检查API是否正确申请或是否填写正确")
+    try:
+        conn = http.client.HTTPSConnection("api.tianapi.com")  # 接口域名
+        params = urllib.parse.urlencode({"key": tianxing_API, "city": city})
+        headers = {"Content-type": "application/x-www-form-urlencoded"}
+        conn.request("POST", "/tianqi/index", params, headers)
+        res = conn.getresponse()
+        data = res.read()
+        data = json.loads(data)
+        tips = data["newslist"][0]["tips"]
+        sunrise = data["newslist"][0]["sunrise"]
+        sunset = data["newslist"][0]["sunset"]
+        return tips, sunrise, sunset
+    except:
+        return "天气预报API调取错误，请检查API是否正确申请或是否填写正确"
 
-#推送信息
-def send_message(to_user, access_token, city_name, weather, max_temperature, min_temperature, pipi, lizhi, pop, tips, note_en, note_ch, health_tip, lucky_):
-    url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}".format(access_token)
+
+# 推送信息
+def send_message(
+    to_user,
+    access_token,
+    city_name,
+    weather,
+    max_temperature,
+    min_temperature,
+    tips,
+    sunrise,
+    sunset,
+    say,
+):
+    url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}".format(
+        access_token
+    )
     week_list = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
     year = localtime().tm_year
     month = localtime().tm_mon
@@ -229,79 +150,27 @@ def send_message(to_user, access_token, city_name, weather, max_temperature, min
         "url": "http://weixin.qq.com/download",
         "topcolor": "#FF0000",
         "data": {
-            "date": {
-                "value": "{} {}".format(today, week),
-                "color": get_color()
-            },
-            "city": {
-                "value": city_name,
-                "color": get_color()
-            },
-            "weather": {
-                "value": weather,
-                "color": get_color()
-            },
-            "min_temperature": {
-                "value": min_temperature,
-                "color": get_color()
-            },
-            "max_temperature": {
-                "value": max_temperature,
-                "color": get_color()
-            },
-            "love_day": {
-                "value": love_days,
-                "color": get_color()
-            },
-            "note_en": {
-                "value": note_en,
-                "color": get_color()
-            },
-            "note_ch": {
-                "value": note_ch,
-                "color": get_color()
-            },
-
-            "pipi": {
-                "value": pipi,
-                "color": get_color()
-            },
-
-            "lucky": {
-                "value": lucky_,
-                "color": get_color()
-            },
-
-            "lizhi": {
-                "value": lizhi,
-                "color": get_color()
-            },
-
-            "pop": {
-                "value": pop,
-                "color": get_color()
-            },
-
-            "health": {
-                "value": health_tip,
-                "color": get_color()
-            },
-
-            "tips": {
-                "value": tips,
-                "color": get_color()
-            }
-        }
+            "date": {"value": "{} {}".format(today, week)},
+            "city": {"value": city_name},
+            "weather": {"value": weather},
+            "min_temperature": {"value": min_temperature},
+            "max_temperature": {"value": max_temperature},
+            "love_day": {"value": love_days},
+            "tips": {"value": tips},
+            "sunrise": {"value": sunrise},
+            "sunset": {"value": sunset},
+            "say": {"value": say},
+        },
     }
     for key, value in birthdays.items():
         # 获取距离下次生日的时间
         birth_day = get_birthday(value, year, today)
         # 将生日数据插入data
-        data["data"][key] = {"value": birth_day, "color": get_color()}
+        data["data"][key] = {"value": birth_day}
     headers = {
-        'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                      'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36",
     }
     response = post(url, headers=headers, json=data).json()
     if response["errcode"] == 40037:
@@ -328,45 +197,24 @@ if __name__ == "__main__":
         print("推送消息失败，请检查配置文件格式是否正确")
         os.system("pause")
         sys.exit(1)
-
-    # 获取accessToken
     accessToken = get_access_token()
-    # 接收的用户
     users = config["user"]
-    # 传入省份和市获取天气信息
     province, city = config["province"], config["city"]
     weather, max_temperature, min_temperature = get_weather(province, city)
-    #获取天行API
-    tianxing_API=config["tianxing_API"]
-    #是否开启天气预报API
-    Whether_tip=config["Whether_tip"]
-    #是否启用词霸每日一句
-    Whether_Eng=config["Whether_Eng"]
-    #是否启用星座API
-    Whether_lucky=config["Whether_lucky"]
-    #是否启用励志古言API
-    Whether_lizhi=config["Whether_lizhi"]
-    #是否启用彩虹屁API
-    Whether_caihongpi=config["Whether_caihongpi"]
-    #是否启用健康小提示API
-    Whether_health=config["Whether_health"]
-    #获取星座
-    astro = config["astro"]
-    # 获取词霸每日金句
-    note_ch, note_en = get_ciba()
-    #彩虹屁
-    pipi = caihongpi()
-    #健康小提示
-    health_tip = health()
-    #下雨概率和建议
-    # pop,tips = tip()
-    #励志名言
-    lizhi = lizhi()
-    #星座运势
-    lucky_ = lucky()
+    tianxing_API = config["tianxing_API"]
+    tips, sunrise, sunset = tip()
+    say = "爱你哦"
     # 公众号推送消息
     for user in users:
-        send_message(user, accessToken, city, weather, max_temperature, min_temperature, pipi, lizhi,'','', note_en, note_ch, health_tip, lucky_)
-    import time
-    time_duration = 3.5
-    time.sleep(time_duration)
+        send_message(
+            user,
+            accessToken,
+            city,
+            weather,
+            max_temperature,
+            min_temperature,
+            tips,
+            sunrise,
+            sunset,
+            say,
+        )
