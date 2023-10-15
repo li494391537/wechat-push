@@ -6,7 +6,7 @@ on:
   schedule:
   - cron:  '0 23 * * *'
 env:
-  TZ: ETC/GMT+8
+  TZ: Etc/GMT+8
 permissions:
   contents: read
 jobs:
