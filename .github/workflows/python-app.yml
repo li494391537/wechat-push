@@ -5,8 +5,6 @@ on:
   workflow_dispatch:
   schedule:
   - cron:  '0 23 * * *'
-env:
-  TZ: Etc/GMT+8
 permissions:
   contents: read
 jobs:
@@ -21,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: |
         date
-        sudo timedatectl set-timezone "$TZ"
+        sudo timedatectl set-timezone "Etc/GMT+8"
         date
     #     python -m pip install --upgrade pip
     #     if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
