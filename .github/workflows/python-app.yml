@@ -21,13 +21,14 @@ jobs:
     - name: Install dependencies
       run: |
         sudo timedatectl set-timezone "$TZ"
-        python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - shell: bash
-      env:
-        SUPER_SECRET: ${{ secrets.CONFIG_FILE }}
-      run: |
-        echo "$SUPER_SECRET" > config.json
-    - name: Test with pytest
-      run: |
-        python ./main.py
+        date
+    #     python -m pip install --upgrade pip
+    #     if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    # - shell: bash
+    #   env:
+    #     SUPER_SECRET: ${{ secrets.CONFIG_FILE }}
+    #   run: |
+    #     echo "$SUPER_SECRET" > config.json
+    # - name: Test with pytest
+    #   run: |
+    #     python ./main.py
