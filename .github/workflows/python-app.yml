@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: |
         date
-        sudo timedatectl set-timezone "Etc/GMT-8"
+        sudo timedatectl set-timezone "Asia/Shanghai"
         date
     #     python -m pip install --upgrade pip
     #     if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
